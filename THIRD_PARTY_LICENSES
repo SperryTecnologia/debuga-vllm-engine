@@ -1,0 +1,110 @@
+# Third-Party Licenses
+
+This project uses or references the following third-party projects.
+Each project is governed by its own license terms.
+
+---
+
+## vLLM
+
+- **Project**: https://github.com/vllm-project/vllm
+- **License**: Apache License 2.0
+- **Copyright**: vLLM Team
+- **Usage**: Inference engine for serving LLM models
+
+---
+
+## Qwen2.5-Coder (Alibaba Cloud / Qwen Team)
+
+- **Project**: https://huggingface.co/collections/Qwen/qwen25-coder-66eaa22e6f99801bf65b0c2f
+- **License**: Apache License 2.0 (varies by model size; check individual model cards)
+- **Copyright**: Alibaba Cloud
+- **Usage**: Base language models for code and DevOps tasks
+
+---
+
+## Hugging Face Transformers
+
+- **Project**: https://github.com/huggingface/transformers
+- **License**: Apache License 2.0
+- **Copyright**: Hugging Face, Inc.
+- **Usage**: Model loading, tokenization, and utilities
+
+---
+
+## Hugging Face Hub
+
+- **Project**: https://github.com/huggingface/huggingface_hub
+- **License**: Apache License 2.0
+- **Copyright**: Hugging Face, Inc.
+- **Usage**: Model download and management via CLI
+
+---
+
+## NVIDIA CUDA Toolkit
+
+- **Project**: https://developer.nvidia.com/cuda-toolkit
+- **License**: NVIDIA CUDA Toolkit EULA
+- **Copyright**: NVIDIA Corporation
+- **Usage**: GPU acceleration for model inference
+- **Note**: CUDA runtime is included in the Docker base image (nvidia/cuda)
+
+---
+
+## NVIDIA Container Toolkit
+
+- **Project**: https://github.com/NVIDIA/nvidia-container-toolkit
+- **License**: Apache License 2.0
+- **Copyright**: NVIDIA Corporation
+- **Usage**: GPU passthrough for Docker containers
+
+---
+
+## Docker
+
+- **Project**: https://www.docker.com/
+- **License**: Apache License 2.0 (Docker Engine)
+- **Copyright**: Docker, Inc.
+- **Usage**: Containerization of the inference engine
+
+---
+
+## Prometheus
+
+- **Project**: https://github.com/prometheus/prometheus
+- **License**: Apache License 2.0
+- **Copyright**: The Prometheus Authors
+- **Usage**: Metrics collection and monitoring
+
+---
+
+## Grafana
+
+- **Project**: https://github.com/grafana/grafana
+- **License**: GNU Affero General Public License v3.0 (AGPL-3.0)
+- **Copyright**: Grafana Labs
+- **Usage**: Metrics visualization and dashboards
+- **Note**: Grafana is used as an external monitoring tool, not embedded in this project
+
+---
+
+## PyTorch
+
+- **Project**: https://github.com/pytorch/pytorch
+- **License**: BSD-3-Clause
+- **Copyright**: Meta Platforms, Inc. and affiliates
+- **Usage**: Deep learning framework (dependency of vLLM)
+
+---
+
+## AutoAWQ
+
+- **Project**: https://github.com/casper-hansen/AutoAWQ
+- **License**: MIT License
+- **Copyright**: Casper Hansen
+- **Usage**: AWQ quantization (referenced in documentation)
+
+---
+
+This file is provided for informational purposes. For the most up-to-date
+license information, please refer to each project's official repository.

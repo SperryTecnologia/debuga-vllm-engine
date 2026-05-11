@@ -1,0 +1,59 @@
+# ============================================================
+# Qwen2.5-Coder-7B — vLLM Serving Configuration
+# ============================================================
+# Target: Single GPU with 8+ GB VRAM (AWQ) or 16+ GB (FP16)
+# Use case: Development, testing, low-latency interactive chat
+#
+# This is an example configuration for lab environments.
+# Not a production configuration.
+# ============================================================
+
+# Model identification
+model:
+  id: "Qwen/Qwen2.5-Coder-7B-Instruct-AWQ"
+  # For FP16 (requires more VRAM):
+  # id: "Qwen/Qwen2.5-Coder-7B-Instruct"
+  revision: "main"
+  trust_remote_code: true
+
+# Quantization
+quantization:
+  method: "awq"        # awq, gptq, fp8, or null for FP16
+  # method: null       # Uncomment for FP16
+
+# Server settings
+server:
+  port: 8000
+  host: "0.0.0.0"
+
+# GPU configuration
+gpu:
+  tensor_parallel_size: 1          # Single GPU
+  gpu_memory_utilization: 0.90     # 90% of VRAM
+  enforce_eager: false             # Use CUDA graphs for speed
+
+# Context and batching
+inference:
+  max_model_len: 8192              # Max context window (tokens)
+  max_num_seqs: 32                 # Max concurrent sequences
+  max_num_batched_tokens: null     # Auto-calculated
+  enable_prefix_caching: true      # Cache common prefixes
+
+# Generation defaults
+generation:
+  temperature: 0.1                 # Low for deterministic DevOps output
+  top_p: 0.95
+  max_tokens: 2048
+  stop_sequences:
+    - "<|endoftext|>"
+    - "<|im_end|>"
+
+# Logging
+logging:
+  level: "INFO"
+  disable_log_requests: false
+
+# Estimated resources
+# VRAM: ~4 GB (AWQ) or ~14 GB (FP16)
+# RAM: ~8 GB
+# Throughput: ~40-60 tokens/s (AWQ, RTX 3090)

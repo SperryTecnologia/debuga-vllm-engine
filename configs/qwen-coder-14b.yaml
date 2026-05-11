@@ -1,0 +1,60 @@
+# ============================================================
+# Qwen2.5-Coder-14B — vLLM Serving Configuration
+# ============================================================
+# Target: Single GPU with 16+ GB VRAM (AWQ) or 32+ GB (FP16)
+# Use case: Production-quality responses, complex analysis
+#
+# This is an example configuration for lab environments.
+# Not a production configuration.
+# ============================================================
+
+# Model identification
+model:
+  id: "Qwen/Qwen2.5-Coder-14B-Instruct-AWQ"
+  # For FP16 (requires more VRAM):
+  # id: "Qwen/Qwen2.5-Coder-14B-Instruct"
+  revision: "main"
+  trust_remote_code: true
+
+# Quantization
+quantization:
+  method: "awq"        # awq, gptq, fp8, or null for FP16
+  # method: null       # Uncomment for FP16
+
+# Server settings
+server:
+  port: 8000
+  host: "0.0.0.0"
+
+# GPU configuration
+gpu:
+  tensor_parallel_size: 1          # Single GPU (24 GB+ for AWQ)
+  # tensor_parallel_size: 2        # 2 GPUs for FP16
+  gpu_memory_utilization: 0.90
+  enforce_eager: false
+
+# Context and batching
+inference:
+  max_model_len: 8192              # Can increase to 16384 with enough VRAM
+  max_num_seqs: 16                 # Lower than 7B due to memory
+  max_num_batched_tokens: null
+  enable_prefix_caching: true
+
+# Generation defaults
+generation:
+  temperature: 0.1
+  top_p: 0.95
+  max_tokens: 4096                 # Longer outputs for detailed analysis
+  stop_sequences:
+    - "<|endoftext|>"
+    - "<|im_end|>"
+
+# Logging
+logging:
+  level: "INFO"
+  disable_log_requests: false
+
+# Estimated resources
+# VRAM: ~8 GB (AWQ) or ~28 GB (FP16)
+# RAM: ~16 GB
+# Throughput: ~25-40 tokens/s (AWQ, RTX 3090)

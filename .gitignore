@@ -1,0 +1,41 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# Model weights (download separately)
+models/
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.gguf
+*.ggml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Logs and outputs
+logs/
+outputs/
+benchmark-results/
+cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+data/
