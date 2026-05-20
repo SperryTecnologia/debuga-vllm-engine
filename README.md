@@ -40,7 +40,7 @@ A [debuga.ai](https://github.com/SperryTecnologia/debuga-ai) atualmente utiliza 
 
 ```
 ┌─────────────────────────────────────────┐
-│            vLLM Engine                   │
+│            vLLM Engine                  │
 │  ┌─────────────────────────────────┐    │
 │  │  OpenAI-compatible API server   │    │
 │  ├─────────────────────────────────┤    │
