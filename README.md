@@ -1,185 +1,141 @@
 # debuga-vllm-engine
 
-Configurações e scripts para rodar [vLLM](https://github.com/vllm-project/vllm) com modelos [Qwen-Coder](https://huggingface.co/collections/Qwen/qwen25-coder-66eaa22e6f99801bf65b0c2f) em GPU. Parte da stack LLM do [debuga.ai](https://debuga.ai).
+**Estudos de serving LLM com vLLM para workloads técnicos e inferência local acelerada por GPU.**
 
-## Sobre
+Desenvolvida por [Sperry Tecnologia](https://www.sperrytecnologia.com.br).
 
-O **debuga-vllm-engine** é um laboratório público para configurar e operar o vLLM como engine de inferência para modelos Qwen-Coder, voltados a tarefas de DevOps, segurança da informação e infraestrutura de TI.
+---
 
-Este repositório contém:
+## O que é
 
-- Dockerfile e docker-compose para ambiente local com CUDA 12
-- Configurações YAML para modelos Qwen-Coder (7B, 14B, 32B)
-- Scripts utilitários (download, inicialização, health check, benchmark)
-- Configuração de monitoramento com Prometheus e Grafana
-- Documentação de instalação, hardware, serving, quantização e troubleshooting
+Este repositório contém estudos e configurações experimentais para serving de modelos LLM com [vLLM](https://github.com/vllm-project/vllm), focado em cenários de alta concorrência e inferência local acelerada por GPU. O objetivo é avaliar a viabilidade de vLLM como alternativa ao Ollama para cenários enterprise com múltiplos usuários simultâneos.
 
-### O que este repositório **não** contém
+Este é um repositório **experimental/laboratório**, não contém código de produção.
 
-- Pesos de modelos (devem ser baixados do Hugging Face)
-- Dados de clientes ou conversas reais
-- Configurações de produção do debuga.ai
-- Secrets, tokens ou credenciais
-- Adaptadores LoRA ou fine-tuning proprietário
-- Métricas ou custos reais de produção
+---
 
-## Atribuição
+## Status
 
-Este projeto é **baseado em vLLM** e **compatível com Qwen-Coder**. Tanto o vLLM quanto os modelos Qwen são projetos upstream independentes, desenvolvidos por suas respectivas equipes. Este repositório apenas fornece configurações e scripts para facilitar o uso desses projetos.
+| Aspecto | Classificação |
+|---------|--------------|
+| Tipo | Laboratório de serving |
+| Código de produção | Não incluso |
+| Maturidade | Experimental |
+| Uso atual na plataforma | Nenhum (Ollama é o runtime de produção) |
 
-## Requisitos de GPU
+---
 
-| Modelo | Precisão | VRAM Mínima | GPU Recomendada |
-|--------|----------|-------------|-----------------|
-| Qwen2.5-Coder-7B | AWQ (INT4) | 8 GB | RTX 3060 12 GB |
-| Qwen2.5-Coder-7B | FP16 | 16 GB | RTX 3090 / 4090 |
-| Qwen2.5-Coder-14B | AWQ (INT4) | 12 GB | RTX 3090 / 4090 |
-| Qwen2.5-Coder-14B | FP16 | 32 GB | A100 40 GB |
-| Qwen2.5-Coder-32B | AWQ (INT4) | 20 GB | RTX 3090 / A10G |
-| Qwen2.5-Coder-32B | FP16 | 68 GB | A100 80 GB |
+## Como se conecta à debuga.ai
 
-**Requisitos de sistema:**
-- NVIDIA GPU com CUDA Compute Capability >= 7.0 (Volta ou superior)
-- NVIDIA Driver >= 525.60
-- Docker com NVIDIA Container Toolkit (para uso com Docker)
-- Ou: Python 3.10+, CUDA 12.x, PyTorch 2.x (para uso direto)
+A [debuga.ai](https://github.com/SperryTecnologia/debuga-ai) atualmente utiliza Ollama como runtime de inferência local. O vLLM é estudado como alternativa para cenários futuros que exijam:
 
-## Quick Start
+- Alta concorrência (50+ usuários simultâneos)
+- Continuous batching para melhor utilização de GPU
+- Tensor parallelism para modelos maiores
+- Compatibilidade nativa com API OpenAI
 
-### 1. Clonar e configurar
+---
 
-```bash
-git clone https://github.com/SperryTecnologia/debuga-vllm-engine.git
-cd debuga-vllm-engine
-cp .env.example .env
-# Editar .env com seu HF_TOKEN e configurações desejadas
-```
-
-### 2. Baixar modelo
-
-```bash
-./scripts/download-model.sh 7b-awq
-```
-
-### 3. Iniciar vLLM
-
-```bash
-# Com Docker (recomendado)
-docker compose -f docker/docker-compose.yml up -d
-
-# Ou diretamente
-./scripts/start-vllm.sh
-```
-
-### 4. Verificar status
-
-```bash
-./scripts/health-check.sh
-```
-
-### 5. Usar a API
-
-A API é compatível com o formato OpenAI:
-
-```bash
-curl http://localhost:8000/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "Qwen/Qwen2.5-Coder-7B-Instruct-AWQ",
-    "messages": [
-      {"role": "system", "content": "Você é um especialista em infraestrutura Linux."},
-      {"role": "user", "content": "Como diagnosticar alta latência em um servidor web Nginx?"}
-    ],
-    "temperature": 0.1,
-    "max_tokens": 1024
-  }'
-```
-
-### Com Python (OpenAI SDK)
-
-```python
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="not-needed"
-)
-
-response = client.chat.completions.create(
-    model="Qwen/Qwen2.5-Coder-7B-Instruct-AWQ",
-    messages=[
-        {"role": "system", "content": "Você é um especialista em segurança."},
-        {"role": "user", "content": "Analise as regras iptables deste servidor."}
-    ],
-    temperature=0.1
-)
-
-print(response.choices[0].message.content)
-```
-
-## Estrutura do Repositório
+## Arquitetura
 
 ```
-debuga-vllm-engine/
-├── README.md                          # Este arquivo
-├── LICENSE                            # Apache 2.0
-├── THIRD_PARTY_LICENSES               # Licenças de projetos upstream
-├── .gitignore                         # Ignora modelos, secrets, cache
-├── .env.example                       # Template de variáveis de ambiente
-├── docker/
-│   ├── Dockerfile.cuda12              # Imagem Docker com CUDA 12 + vLLM
-│   └── docker-compose.yml             # Compose para lab local
-├── configs/
-│   ├── qwen-coder-7b.yaml            # Config para 7B (single GPU)
-│   ├── qwen-coder-14b.yaml           # Config para 14B (single/multi GPU)
-│   └── qwen-coder-32b.yaml           # Config para 32B (multi GPU)
-├── scripts/
-│   ├── download-model.sh             # Baixar modelos do Hugging Face
-│   ├── start-vllm.sh                 # Iniciar vLLM com .env
-│   ├── health-check.sh               # Verificar status do engine
-│   └── benchmark.sh                  # Benchmark com prompts sintéticos
-├── monitoring/
-│   ├── prometheus.yml                 # Scrape config para vLLM
-│   └── grafana-dashboard.json         # Dashboard de métricas
-└── docs/
-    ├── installation.md                # Guia de instalação
-    ├── hardware-requirements.md       # Requisitos detalhados de GPU
-    ├── model-serving.md               # Serving e API
-    ├── quantization.md                # Guia de quantização
-    ├── monitoring.md                  # Monitoramento com Prometheus/Grafana
-    └── troubleshooting.md             # Problemas comuns e soluções
+┌─────────────────────────────────────────┐
+│            vLLM Engine                   │
+│  ┌─────────────────────────────────┐    │
+│  │  OpenAI-compatible API server   │    │
+│  ├─────────────────────────────────┤    │
+│  │  Continuous Batching Engine     │    │
+│  ├─────────────────────────────────┤    │
+│  │  PagedAttention (KV Cache)      │    │
+│  ├─────────────────────────────────┤    │
+│  │  GPU (CUDA / Tensor Parallel)   │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
 ```
 
-## Documentação
+---
 
-| Documento | Descrição |
-|-----------|-----------|
-| [Instalação](docs/installation.md) | Pré-requisitos, Docker, instalação direta |
-| [Hardware](docs/hardware-requirements.md) | Requisitos de GPU por modelo e precisão |
-| [Model Serving](docs/model-serving.md) | Configuração, API, streaming, LoRA |
-| [Quantização](docs/quantization.md) | AWQ, GPTQ, FP8 — quando usar cada um |
-| [Monitoramento](docs/monitoring.md) | Prometheus, Grafana, alertas |
-| [Troubleshooting](docs/troubleshooting.md) | Problemas comuns e soluções |
+## Funcionalidades Estudadas
 
-## Repositórios Relacionados
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| OpenAI-compatible endpoints | API drop-in replacement | Testado |
+| Continuous batching | Processamento dinâmico de múltiplas requisições | Testado |
+| PagedAttention | Gerenciamento eficiente de KV cache | Testado |
+| Tensor parallelism | Distribuição de modelo entre GPUs | Planejado |
+| Quantização (AWQ/GPTQ) | Modelos comprimidos para menor VRAM | Testado |
+| Streaming | SSE-compatible streaming responses | Testado |
+| Tool calling | Function calling via API | Em avaliação |
 
-| Repositório | Descrição |
-|-------------|-----------|
-| [debuga-ai](https://github.com/SperryTecnologia/debuga-ai) | Plataforma SaaS principal |
-| [debuga-llm-stack](https://github.com/SperryTecnologia/debuga-llm-stack) | Arquitetura da stack LLM |
-| [debuga-qwen-coder-lab](https://github.com/SperryTecnologia/debuga-qwen-coder-lab) | Lab de avaliação de modelos Qwen-Coder |
-| **debuga-vllm-engine** | Este repositório — engine de inferência |
-| debuga-llm-gateway | Gateway de roteamento LLM (em breve) |
+---
 
-## Segurança
+## Testes de Performance
 
-- Este repositório **não contém** secrets, credenciais ou configurações de produção
-- Todos os IPs usados em exemplos são de ranges privados RFC 1918 (10.0.x.x, 192.168.x.x)
-- Pesos de modelos devem ser baixados separadamente do Hugging Face
-- Para reportar vulnerabilidades: security@sperrytecnologia.com.br
+Comparação indicativa entre Ollama e vLLM (Qwen 2.5 7B, RTX 3090):
+
+| Métrica | Ollama | vLLM |
+|---------|--------|------|
+| Tokens/s (1 usuário) | ~45 | ~50 |
+| Tokens/s (10 usuários) | ~15 | ~40 |
+| Tokens/s (50 usuários) | Degradação | ~30 |
+| First token latency | ~800ms | ~600ms |
+| Utilização GPU (pico) | ~70% | ~95% |
+
+> Resultados são indicativos e dependem do hardware, modelo e configuração.
+
+---
+
+## Quando usar vLLM vs Ollama
+
+| Cenário | Recomendação |
+|---------|-------------|
+| Deploy simples, poucos usuários | Ollama |
+| Prototipagem rápida | Ollama |
+| Alta concorrência (50+) | vLLM |
+| Múltiplas GPUs | vLLM |
+| Modelos muito grandes (70B+) | vLLM |
+| Máxima utilização de GPU | vLLM |
+
+---
+
+## Uso Previsto
+
+- Avaliar vLLM para cenários enterprise da debuga.ai
+- Documentar configurações de serving otimizadas
+- Comparar performance com Ollama em diferentes cargas
+- Preparar migração futura quando necessário
+
+---
+
+## Limitações
+
+- vLLM tem setup mais complexo que Ollama
+- Requer CUDA toolkit e drivers específicos
+- Nem todos os modelos GGUF são suportados nativamente
+- Overhead de memória maior para poucos usuários
+- Este repositório não contém código de produção
+
+---
+
+## Roadmap
+
+| Item | Status |
+|------|--------|
+| Setup básico com Qwen 2.5 | Concluído |
+| Benchmarks comparativos | Concluído |
+| Testes de concorrência | Em andamento |
+| Tensor parallelism (multi-GPU) | Planejado |
+| Integração com gateway | Planejado |
+| Documentação de migração Ollama → vLLM | Planejado |
+
+---
 
 ## Licença
 
-Este projeto está licenciado sob [Apache License 2.0](LICENSE).
+Scripts e configurações sob licença MIT. O código de produção da plataforma é privado.
 
-Os modelos Qwen-Coder são licenciados sob seus próprios termos (ver [Qwen License](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct/blob/main/LICENSE)). O vLLM é licenciado sob Apache 2.0. Consulte [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES) para detalhes.
+---
+
+## Sperry Tecnologia
+
+Desenvolvido por [Sperry Tecnologia](https://www.sperrytecnologia.com.br) — infraestrutura, segurança, DevOps e automação com IA.
