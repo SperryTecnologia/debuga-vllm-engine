@@ -136,6 +136,15 @@ Scripts e configurações sob licença MIT. O código de produção da plataform
 
 ---
 
+## Documentação da Plataforma
+
+- [debuga.ai](https://debuga.ai) — Plataforma de IA operacional
+- [Whitepaper](https://debuga.ai/docs/whitepaper)
+- [Arquitetura Técnica](https://debuga.ai/docs/architecture)
+- [Repositório principal](https://github.com/SperryTecnologia/debuga-ai)
+
+---
+
 ## Sperry Tecnologia
 
 Desenvolvido por [Sperry Tecnologia](https://www.sperrytecnologia.com.br) — infraestrutura, segurança, DevOps e automação com IA.
