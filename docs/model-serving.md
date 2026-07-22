@@ -4,7 +4,7 @@ Este documento cobre a configuração e operação do vLLM para servir modelos Q
 
 ## API Compatível com OpenAI
 
-O vLLM expõe uma API REST compatível com o formato da OpenAI. Isso permite usar qualquer cliente OpenAI existente sem modificação.
+O vLLM expõe uma API OpenAI-compatible. A compatibilidade é ampla, mas depende da versão, do endpoint e do modelo; valide os parâmetros usados pelo seu cliente.
 
 ### Endpoints Disponíveis
 
@@ -97,7 +97,7 @@ for chunk in stream:
 | `presence_penalty` | Penalidade por novos tópicos | 0.0 | 0.0 |
 | `stop` | Sequências de parada | Nenhuma | `["<|endoftext|>"]` |
 
-Para tarefas de DevOps e segurança, recomenda-se `temperature=0.1` para respostas consistentes e reproduzíveis.
+Para avaliações controladas, uma temperatura baixa como `0.1` pode reduzir variação. Isso não torna a saída totalmente determinística nem substitui validação técnica.
 
 ## Configuração do Servidor
 

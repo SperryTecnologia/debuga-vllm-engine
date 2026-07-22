@@ -11,7 +11,7 @@ A quantização reduz a precisão dos pesos do modelo para diminuir o consumo de
 | **FP8** | 8-bit | Muito alta | Rápida | Nativo (Hopper/Ada) |
 | **BitsAndBytes** | NF4/INT8 | Alta | Média | Via integração |
 
-A recomendação para produção com vLLM é **AWQ**, por oferecer o melhor equilíbrio entre qualidade, velocidade e compatibilidade.
+Para laboratório, **AWQ** pode ser um ponto de partida quando há suporte para o modelo e para a versão do vLLM. A escolha final exige avaliação de qualidade, compatibilidade e memória no ambiente-alvo.
 
 ## AWQ (Activation-aware Weight Quantization)
 
@@ -54,7 +54,7 @@ python -m vllm.entrypoints.openai.api_server \
 
 ## FP8 (Hopper/Ada GPUs)
 
-Para GPUs com suporte nativo a FP8 (H100, L40S, RTX 4090), o FP8 oferece qualidade quase idêntica a FP16 com ~50% menos VRAM.
+FP8 pode reduzir memória em hardware compatível, mas qualidade, kernels e suporte variam por GPU, modelo e versão. Valide com a documentação oficial e com um benchmark reproduzível.
 
 ```bash
 # Quantização FP8 on-the-fly

@@ -1,0 +1,22 @@
+name: Correção de documentação
+description: Informe um erro, link quebrado ou exemplo inconsistente em debuga.ai vLLM Engine.
+title: "docs: "
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema
+      description: Descreva o trecho incorreto e o comportamento esperado.
+    validations:
+      required: true
+  - type: input
+    id: path
+    attributes:
+      label: Arquivo ou URL
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidência ou proposta de correção
